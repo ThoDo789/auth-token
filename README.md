@@ -68,3 +68,39 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+##### login/logout
+
+==============login==============
+
+1-request data form to serve
+
+2-test postman
+copy code into login() submit-form
+
+3-post api get token:
+
+-instead of usename password in url by state data form
+
+-fetch: + set res.ok return res.json() else throw new Error("fail")
+        + save token  into localStorage.setItem("token",result.accessToken)
+
+4- set status login =>isLogin:localStorage.getItem("token")!==null;
+        pass props to logout 
+
+
+ ==============logout===============
+1-set logout() to button:
+ + localStorage.removeItem("token")
+ + get props.IsLogin
+2- set loadDataLogout():
+
+    + get data api: 
+            test postman copy code: get api token in authencation by beard  paste token in token
+
+    + copy code fetch: 
+            instead of token to localStorage.getItem("token");
+            fetch: set res.ok return res.json() else throw new Error("fail")
+            if error => callback logout()   
+
+
