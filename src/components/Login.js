@@ -42,7 +42,9 @@ class Login extends Component {
   };
   onSuccessLogout=()=> {
     this.setState({
-      isLogin: false
+      isLogin: false,
+      username:"",
+      password:""
     });
   }
   render() {
