@@ -1,22 +1,17 @@
-import React, { Component } from "react";
+import React, { useState } from "react";
 import Profile from "./Profile";
-class Login extends Component {
-  constructor() {
-    super();
-    this.state = {
-      username: "",
-      password: "",
-      isLogin: localStorage.getItem("token") !== null
-    };
-  }
-  onHandlechange = e => {
-    this.setState({
-      [e.target.name]: e.target.value
-    });
-  };
-  login = e => {
+
+const Login = () => {
+  const [username, setUsename] = useState("");
+  const [password, setPassword] = useState("");
+  const [isLogin, setIsLogin] = useState(
+    localStorage.getItem("token") !== null
+  );
+  const onSubmitLogin = e => {
     e.preventDefault();
+    console.log(password, username);
     var myHeaders = new Headers();
+
     var requestOptions = {
       method: "POST",
       headers: myHeaders,
@@ -24,65 +19,52 @@ class Login extends Component {
     };
 
     fetch(
-      `https://learn-api.jmaster.io:8443/api/login?username=${this.state.username}&password=${this.state.password}`,
+      `https://learn-api.jmaster.io:8443/api/login?username=${username}&password=${password}`,
       requestOptions
     )
       .then(response => {
         if (response.ok) {
           return response.json();
         }
-        throw new Error(response.status);
+        throw new Error("fail");
       })
       .then(result => {
-        console.log(result);
         localStorage.setItem("token", result.accessToken);
-        this.setState({isLogin:true})
+        setIsLogin(true);
       })
       .catch(error => console.log("error", error));
   };
-  onSuccessLogout=()=> {
-    this.setState({
-      isLogin: false,
-      username:"",
-      password:""
-    });
-  }
-  render() {
-    return (
-      <div>
-        {this.state.isLogin ? (
-          <Profile
-            key={this.state.isLogin}
-            onSuccessLogout={this.onSuccessLogout}
+  const onLogoutSuccess = () => {
+    setIsLogin(false);
+    setPassword("");
+    setUsename("");
+  };
+  return (
+    <div>
+      {isLogin ? (
+        <Profile key={isLogin} onLogoutSuccess={onLogoutSuccess} />
+      ) : (
+        <form onSubmit={onSubmitLogin}>
+          <label htmlFor="usesname">Usename:</label>
+          <input
+            id="useName"
+            type="text"
+            value={username}
+            onChange={e => setUsename(e.target.value)}
           />
-        ) : (
-          <form onSubmit={this.login}>
-            <div>
-              <label>Username:</label>
-              <input
-                type="text"
-                name="username"
-                onChange={this.onHandlechange}
-                value={this.state.username}
-              />
-            </div>
-            <div>
-              <label>Password:</label>
-              <input
-                type="password"
-                name="password"
-                onChange={this.onHandlechange}
-                value={this.state.password}
-              />
-            </div>
-            <div>
-              <button type="submit">Submit</button>
-            </div>
-          </form>
-        )}
-      </div>
-    );
-  }
-}
+          <br />
+          <label htmlFor="password">Password:</label>
+          <input
+            id="password"
+            type="text"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+          />
+          <button type="submit">Login</button>
+        </form>
+      )}
+    </div>
+  );
+};
 
 export default Login;

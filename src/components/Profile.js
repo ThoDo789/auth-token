@@ -1,18 +1,16 @@
-import React, { Component } from "react";
+import React, { useEffect, useState } from "react";
 
-class Profile extends Component {
-  constructor() {
-    super();
-    this.state = {
-      user: {}
-    };
-  }
-  componentDidMount() {
-      this.loadData()
-  }
+const Profile = ({onLogoutSuccess}) => {
   
-
-  loadData = () => {
+  const [user, setUser] = useState({});
+  const onLogout = () => {
+    localStorage.removeItem("token");
+    onLogoutSuccess()
+  };
+  useEffect(() => {
+    onLoadLogout();
+  }, []);
+  const onLoadLogout = () => {
     var myHeaders = new Headers();
     myHeaders.append(
       "Authorization",
@@ -27,37 +25,33 @@ class Profile extends Component {
 
     fetch("https://learn-api.jmaster.io:8443/api/member/me", requestOptions)
       .then(response => {
-          if(response.ok){
-              return response.json()
-          }
-          throw new Error(response.status)
+        if (response.ok) {
+          return response.json();
+        }
+        throw new Error("fail");
       })
       .then(result => {
-          this.setState({
-              user:result
-          })
+        setUser( {...result});
       })
       .catch(error => {
-          console.log("error", error)
-          this.logout()
-    });
+        console.log(error, "logout fail");
+        onLogout();
+      });
   };
-
-  logout = () => {
-    localStorage.removeItem("token");
-    this.props.onSuccessLogout()
-  };
-  render() {
-    return (
+  console.log(user)
+  return (
+    <div>
       <div>
-        <div>name:{this.state.user.name}</div>
-        <div>name:{this.state.user.phone}</div>
-        <button type="button" onClick={this.logout}>
-          Logout
-        </button>
-      </div>
-    );
-  }
-}
+        <span>Name:{user.name}</span>
+        </div>
+      <div>
+        <span>Name:{user.phone}</span>
+        </div>
+      <button type="button" onClick={onLogout}>
+        logout
+      </button>
+    </div>
+  );
+};
 
 export default Profile;
